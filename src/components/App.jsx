@@ -9,6 +9,7 @@ import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 
+import toast, { Toaster } from 'react-hot-toast';
 import { animateScroll } from 'react-scroll';
 
 const App = () => {
@@ -18,7 +19,7 @@ const App = () => {
   const [per_page] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState('');
   // const [id, setId] = useState(null);
@@ -32,19 +33,20 @@ const App = () => {
       try {
         const { hits, totalHits } = await fetchImages(query, page);
         if (hits.length === 0) {
-          return alert('Not found');
+          toast.error('We did not found anything...');
+          return;
         }
         setImages(prevState => [...prevState, ...hits]);
         setLoadMore(() => page < Math.ceil(totalHits / per_page));
       } catch (fetchError) {
-        setError(() => fetchError.message);
-        console.log(error);
+        // setError(() => fetchError.message);
+        toast.error('Oops, something went wrong.');
       } finally {
         setIsLoading(() => false);
       }
     };
     responseImages(searchFromUser, page);
-  }, [searchFromUser, page, error, per_page]);
+  }, [searchFromUser, page, per_page]);
 
   const FormSubmit = searchFromUser => {
     setSearchFromUser(() => searchFromUser);
@@ -78,6 +80,17 @@ const App = () => {
   return (
     <AppBlock>
       <Searchbar onSubmit={FormSubmit}></Searchbar>
+      <Toaster
+        position="top-right"
+        containerClassName="notification"
+        toastOptions={{
+          duration: 1250,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
       {isLoading ? (
         <Loader />
       ) : (
