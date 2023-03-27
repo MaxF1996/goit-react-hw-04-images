@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 
@@ -10,48 +10,46 @@ import {
   SearchFormBtnLabel,
 } from './Searchbar.styled';
 
-export default class Searchbar extends Component {
-  state = {
-    searchFromUser: '',
+const Searchbar = props => {
+  const [searchFromUser, setSearchFromUser] = useState('');
+
+  const handleChange = event => {
+    setSearchFromUser(() => event.target.value.toLowerCase());
   };
 
-  handleChange = event => {
-    this.setState({ searchFromUser: event.currentTarget.value.toLowerCase() });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    if (!this.state.searchFromUser.trim()) {
+    if (!searchFromUser.trim()) {
       return alert('Nothing to search');
     }
-    this.props.onSubmit(this.state.searchFromUser);
-    this.setState({ searchFromUser: '' });
+    props.onSubmit(searchFromUser);
+    setSearchFromUser(() => '');
   };
 
-  render() {
-    return (
-      <SearchbarHeader>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormBtn type="submit">
-            <SearchFormBtnLabel>
-              <FiSearch size={25} stroke="#3f51b5" />
-            </SearchFormBtnLabel>
-          </SearchFormBtn>
-          <SearchFormInput
-            type="text"
-            autocomplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleChange}
-            value={this.state.searchFromUser}
-            name="searchFromUser"
-          ></SearchFormInput>
-        </SearchForm>
-      </SearchbarHeader>
-    );
-  }
-}
+  return (
+    <SearchbarHeader>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormBtn type="submit">
+          <SearchFormBtnLabel>
+            <FiSearch size={25} stroke="#3f51b5" />
+          </SearchFormBtnLabel>
+        </SearchFormBtn>
+        <SearchFormInput
+          type="text"
+          autocomplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleChange}
+          value={searchFromUser}
+          name="searchFromUser"
+        ></SearchFormInput>
+      </SearchForm>
+    </SearchbarHeader>
+  );
+};
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func,
 };
+
+export default Searchbar;
